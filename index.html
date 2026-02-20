@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaiMo Web Cloud | 专业企业级云端技术与数字化转型方案</title>
+    <!-- 引入现代化字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --accent: #38bdf8;
+            --white: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* 顶部导航 */
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 1.25rem 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--secondary);
+            margin-left: 2rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero 区域 */
+        .hero {
+            padding: 160px 10% 100px;
+            background: radial-gradient(circle at top right, rgba(56, 189, 248, 0.1), transparent),
+                radial-gradient(circle at bottom left, rgba(37, 99, 235, 0.05), transparent);
+            text-align: center;
+            position: relative;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            max-width: 900px;
+            margin: 0 auto 24px;
+            line-height: 1.1;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, var(--dark), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--secondary);
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        /* 服务卡片区域 */
+        .services {
+            padding: 80px 10%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            border-color: var(--primary);
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            margin-bottom: 24px;
+        }
+
+        .card h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .card p {
+            color: var(--secondary);
+        }
+
+        /* 页脚 */
+        footer {
+            background: var(--dark);
+            color: #94a3b8;
+            padding: 80px 10% 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 60px;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-bottom {
+            padding-top: 40px;
+            border-top: 1px solid #1e293b;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">KaiMo Web Cloud</div>
+        <nav>
+            <a href="#services">核心服务</a>
+            <a href="#about">关于我们</a>
+            <a href="#contact">业务咨询</a>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="badge">Next-Gen Cloud Solutions</div>
+            <h1>构建稳定高效的<br>数字化业务基石</h1>
+            <p>我们为成长型企业提供深度定制的 Web 云端架构、高性能 API 开发及数据安全治理服务。</p>
+        </section>
+
+        <section class="services" id="services">
+            <div class="card">
+                <div class="card-icon">⚡</div>
+                <h3>高并发架构优化</h3>
+                <p>基于边缘计算与分发技术，解决极速场景下的性能瓶颈，确保您的业务在流量高峰时依然稳如磐石。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h3>企业级安全审计</h3>
+                <p>针对 Web 层及数据层进行 360 度渗透测试与合规性审查，全方位保障数字资产安全无虞。</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">🔗</div>
+                <h3>全平台 API 集成</h3>
+                <p>提供标准化的 RESTful 接口定制开发，帮助企业快速打通异构系统间的互联互通隧道。</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div class="logo" style="color: white; margin-bottom: 20px;">KaiMo Web Cloud</div>
+                <p>专业的云端技术合作伙伴，专注于为每一位开发者与企业提供更可靠的技术中枢支持。</p>
+            </div>
+            <div>
+                <h4 class="footer-title">技术资源</h4>
+                <ul class="footer-links">
+                    <li>文档中心</li>
+                    <li>API 文档</li>
+                    <li>开发者社区</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="footer-title">服务支持</h4>
+                <ul class="footer-links">
+                    <li>商务咨询</li>
+                    <li>安全报告</li>
+                    <li>隐私政策</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024-2026 KaiMo Web Cloud 技术工作室（KaiMo Digital Lab）. All rights reserved.</p>
+            <p style="margin-top: 10px;">我们的技术服务节点已通过合规性审计，致力于打造更透明的云服务生态。</p>
+        </div>
+    </footer>
+</body>
+
+</html>

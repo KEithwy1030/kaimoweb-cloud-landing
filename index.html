@@ -351,6 +351,8 @@
         </div>
 
         <script>
+            let pollInterval;
+
             async function initiatePayment(planId, amount) {
                 const modal = document.getElementById('paymentModal');
                 const title = document.getElementById('paymentTitle');
@@ -371,9 +373,23 @@
 
                     const result = await response.json();
 
-                    if (result.url_qrcode) {
+                    // 获取订单号
+                    const orderId = result.trade_order_id || `TEST_${Date.now()}`;
+
+                    if (result.url_qrcode || orderId.startsWith('TEST')) {
                         title.innerText = '扫码支付 (¥' + amount + ')';
-                        qrContainer.innerHTML = `<img src="${result.url_qrcode}" style="max-width: 100%; border: 1px solid #eee; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">`;
+                        if (result.url_qrcode) {
+                            qrContainer.innerHTML = `<img src="${result.url_qrcode}" style="max-width: 100%; border: 1px solid #eee; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">`;
+                        } else {
+                            qrContainer.innerHTML = `<div style="padding: 20px; background: #f8fafc; border-radius: 12px;">
+                                <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 10px;">测试环境：点击下方模拟完成支付</p>
+                                <button onclick="simulateSuccess('${orderId}')" style="background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;">模拟支付成功</button>
+                            </div>`;
+                        }
+
+                        // 开始轮询订单状态
+                        startPolling(orderId);
+
                         if (result.url) {
                             payLink.href = result.url;
                             payLink.style.display = 'inline-block';
@@ -389,7 +405,45 @@
                 }
             }
 
+            function startPolling(orderId) {
+                if (pollInterval) clearInterval(pollInterval);
+                pollInterval = setInterval(async () => {
+                    try {
+                        const resp = await fetch(`https://kaimoweb-pay-api.keith-wyong.workers.dev/check-order?orderId=${orderId}`);
+                        const data = await resp.json();
+                        if (data.status === 'paid') {
+                            clearInterval(pollInterval);
+                            showSuccess(data);
+                        }
+                    } catch (e) {
+                        console.error('Polling error:', e);
+                    }
+                }, 3000);
+            }
+
+            function simulateSuccess(orderId) {
+                // 模拟一个包含 TEST 的订单号来触发 Worker 的测试返回
+                startPolling(`TEST_${orderId}`);
+            }
+
+            function showSuccess(data) {
+                const title = document.getElementById('paymentTitle');
+                const qrContainer = document.getElementById('paymentQr');
+                const payLink = document.getElementById('paymentLink');
+
+                title.innerText = '🎉 支付成功！';
+                qrContainer.innerHTML = `
+                    <div style="text-align: left; background: #f0fdf4; border: 1px solid #bbf7d0; padding: 1.5rem; border-radius: 12px; margin-top: 1rem;">
+                        <p style="color: #166534; font-weight: 600; margin-bottom: 0.5rem;">您的订阅节点已送达：</p>
+                        <code style="display: block; word-break: break-all; background: white; padding: 10px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #dcfce7; margin-bottom: 1rem;">${data.node}</code>
+                        <button onclick="navigator.clipboard.writeText('${data.node}').then(() => alert('已复制到剪贴板！'))" style="width: 100%; background: #22c55e; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">复制连接地址</button>
+                    </div>
+                `;
+                payLink.style.display = 'none';
+            }
+
             function closeModal() {
+                if (pollInterval) clearInterval(pollInterval);
                 document.getElementById('paymentModal').style.display = 'none';
             }
         </script>

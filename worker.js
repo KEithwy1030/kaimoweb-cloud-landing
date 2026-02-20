@@ -57,6 +57,7 @@ export default {
         });
 
         const result = await response.json();
+        // 如果是开发/测试模式，可以在这里注入一些调试信息
         return new Response(JSON.stringify(result), {
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
@@ -66,6 +67,27 @@ export default {
           headers: corsHeaders,
         });
       }
+    }
+
+    // 路由：查询订单状态 (用于前端轮询)
+    if (url.pathname === "/check-order" && request.method === "GET") {
+      const orderId = url.searchParams.get("orderId");
+
+      // --- 模拟逻辑 (实际应查询数据库或 KV) ---
+      // 为了让你现在就能测试，我们设定：如果订单号包含 "TEST"，就直接返回“已支付”并发送节点
+      if (orderId && orderId.includes("TEST")) {
+        return new Response(JSON.stringify({
+          status: "paid",
+          node: "vless://1f61c4e9-73f9-470b-a65c-26b123c956d2@35.197.153.209:443?encryption=none&security=none&type=tcp#凯默工作室_新加坡_测试节点",
+          message: "支付成功！感谢您的订阅。"
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      return new Response(JSON.stringify({ status: "pending" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // 路由：支付回调 (虎皮椒服务器通知我们的接口)

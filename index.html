@@ -212,6 +212,50 @@
                 gap: 2rem;
             }
         }
+
+        /* 支付弹窗加载动画 */
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
     </style>
 </head>
 
@@ -247,7 +291,7 @@
                         <li style="margin-bottom: 10px;">✓ 域名/SSL 安全配置</li>
                         <li style="margin-bottom: 10px;">✓ 72小时技术响应</li>
                     </ul>
-                    <a href="mailto:support@kaimoweb.cloud"
+                    <a href="javascript:void(0)" onclick="initiatePayment('mini', 19.9)"
                         style="display: block; text-align: center; background: var(--light); color: var(--dark); padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s;">立即咨询</a>
                 </div>
                 <div class="card" style="border: 2px solid var(--primary); position: relative;">
@@ -262,7 +306,7 @@
                         <li style="margin-bottom: 10px;">✓ API 开发与系统集成</li>
                         <li style="margin-bottom: 10px;">✓ 专属技术顾问服务</li>
                     </ul>
-                    <a href="mailto:support@kaimoweb.cloud"
+                    <a href="javascript:void(0)" onclick="initiatePayment('pro', 299)"
                         style="display: block; text-align: center; background: var(--primary); color: white; padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s;">立即订阅</a>
                 </div>
                 <div class="card" style="border: 1px solid #e2e8f0;">
@@ -274,7 +318,7 @@
                         <li style="margin-bottom: 10px;">✓ 全程安全渗透测试</li>
                         <li style="margin-bottom: 10px;">✓ 24/7 优先技术支持</li>
                     </ul>
-                    <a href="mailto:support@kaimoweb.cloud"
+                    <a href="javascript:void(0)" onclick="initiatePayment('global', 1999)"
                         style="display: block; text-align: center; background: var(--light); color: var(--dark); padding: 12px; border-radius: 12px; text-decoration: none; font-weight: 600; transition: all 0.3s;">量身定制</a>
                 </div>
             </div>
@@ -289,6 +333,66 @@
             <a href="mailto:support@kaimoweb.cloud"
                 style="background: var(--dark); color: white; padding: 16px 32px; border-radius: 100px; text-decoration: none; font-weight: 600; font-size: 1.125rem; transition: all 0.3s;">开始业务咨询</a>
         </section>
+        <div id="paymentModal" class="modal">
+            <div class="modal-content">
+                <h3 id="paymentTitle" style="margin-bottom: 1rem;">正在生成支付链接...</h3>
+                <div id="paymentQr"
+                    style="margin: 1.5rem 0; min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                    <div class="loader"></div>
+                </div>
+                <p id="paymentStatus" style="color: var(--secondary); font-size: 0.875rem;">请使用微信/手机端扫码完成支付</p>
+                <div style="margin-top: 1.5rem; display: flex; gap: 1rem; justify-content: center;">
+                    <button onclick="closeModal()" class="btn"
+                        style="background: #f1f5f9; color: var(--dark);">取消</button>
+                    <a id="paymentLink" href="#" target="_blank" class="btn btn-primary"
+                        style="display: none;">直接跳转支付</a>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            async function initiatePayment(planId, amount) {
+                const modal = document.getElementById('paymentModal');
+                const title = document.getElementById('paymentTitle');
+                const qrContainer = document.getElementById('paymentQr');
+                const payLink = document.getElementById('paymentLink');
+
+                modal.style.display = 'flex';
+                title.innerText = '正在发起支付...';
+                qrContainer.innerHTML = '<div class="loader"></div>';
+                payLink.style.display = 'none';
+
+                try {
+                    const response = await fetch('https://kaimoweb-pay-api.keith-wyong.workers.dev/pay', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ planId, amount })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.url_qrcode) {
+                        title.innerText = '扫码支付 (¥' + amount + ')';
+                        qrContainer.innerHTML = `<img src="${result.url_qrcode}" style="max-width: 100%; border: 1px solid #eee; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">`;
+                        if (result.url) {
+                            payLink.href = result.url;
+                            payLink.style.display = 'inline-block';
+                        }
+                    } else if (result.url) {
+                        window.location.href = result.url;
+                    } else {
+                        throw new Error(result.error || '支付发起失败');
+                    }
+                } catch (err) {
+                    title.innerText = '支付初始化失败';
+                    qrContainer.innerHTML = `<p style="color: #ef4444; font-size: 0.875rem;">${err.message}</p><p style="font-size: 0.75rem; margin-top: 0.5rem;">请联系：support@kaimoweb.cloud</p>`;
+                }
+            }
+
+            function closeModal() {
+                document.getElementById('paymentModal').style.display = 'none';
+            }
+        </script>
     </main>
 
     <footer>

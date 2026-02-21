@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <nav class="profile-nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-title">VPN Distribution</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        控制面板
+                    </a>
+                    <a href="/shop" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                        </svg>
+                        购买订阅
+                    </a>
+                    <a href="/my_order" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6"/>
+                        </svg>
+                        我的订单
+                    </a>
+                    <a href="/docs" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                        </svg>
+                        使用文档
+                    </a>
+                    <a href="/profile" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        个人中心
+                    </a>
+                    <a href="/flow" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        流量明细
+                    </a>
+                </div>
+
+                <button class="nav-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    退出
+                </button>
+            </div>
+        </nav>
+
+        <main class="profile-main">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">个人中心</h1>
+                    <p class="page-subtitle">管理您的账户信息和安全设置</p>
+                </div>
+
+                <div class="profile-grid">
+                    <!-- Profile Info Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">基本信息</h2>
+                        </div>
+                        <form id="profileForm">
+                            <div class="form-group">
+                                <label class="form-label">邮箱地址</label>
+                                <input type="email" class="form-input" id="email" readonly>
+                                <div class="form-hint">邮箱地址不可修改</div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">注册时间</label>
+                                <input type="text" class="form-input" id="createdAt" readonly>
+                            </div>
+                            <button type="button" class="btn" onclick="showChangePasswordModal()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                                </svg>
+                                修改密码
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Account Stats Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">账户概览</h2>
+                        </div>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value" id="balance">0</div>
+                                <div class="stat-label">钱包余额 (CNY)</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value success" id="commission">0</div>
+                                <div class="stat-label">可用佣金 (CNY)</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: var(--cyber-spacing-lg);">
+                            <div class="stat-card" style="text-align: left; padding: var(--cyber-spacing-md);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--cyber-spacing-sm);">
+                                    <span class="stat-label">确认中佣金</span>
+                                    <span style="font-weight: 600; color: var(--cyber-warning);" id="pendingCommission">0</span>
+                                </div>
+                                <div style="height: 1px; background: var(--cyber-border-card);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal-overlay" id="changePasswordModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">修改密码</h3>
+                <button class="modal-close" onclick="closeChangePasswordModal()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <form id="changePasswordForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label class="form-label">当前密码</label>
+                        <input type="password" class="form-input" id="oldPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">新密码</label>
+                        <input type="password" class="form-input" id="newPassword" required minlength="6">
+                        <div class="form-hint">密码至少需要6位字符</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">确认新密码</label>
+                        <input type="password" class="form-input" id="confirmPassword" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeChangePasswordModal()">取消</button>
+                    <button type="submit" class="btn">保存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function logout() {
+            API.auth.logout();
+            window.location.href = '/login';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        async function loadProfile() {
+            try {
+                const result = await API.auth.me();
+
+                if (result.code === 0 && result.data) {
+                    const user = result.data;
+                    document.getElementById('email').value = user.email;
+                    document.getElementById('createdAt').value = formatDate(user.created_at);
+                    document.getElementById('balance').textContent = (user.balance || 0).toFixed(2);
+                    document.getElementById('commission').textContent = (user.commission || 0).toFixed(2);
+                    document.getElementById('pendingCommission').textContent = (user.pending_commission || 0).toFixed(2);
+                } else {
+                    alert(result.message || '加载用户信息失败');
+                }
+            } catch (error) {
+                console.error('Load profile error:', error);
+                alert('加载用户信息失败');
+            }
+        }
+
+        function showChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'flex';
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').style.display = 'none';
+            document.getElementById('changePasswordForm').reset();
+        }
+
+        document.getElementById('changePasswordForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (newPassword !== confirmPassword) {
+                alert('两次输入的新密码不一致');
+                return;
+            }
+
+            if (newPassword.length < 6) {
+                alert('新密码至少需要6位字符');
+                return;
+            }
+
+            try {
+                const result = await API.profile.changePassword(oldPassword, newPassword);
+
+                if (result.code === 0) {
+                    alert('密码修改成功！请重新登录');
+                    closeChangePasswordModal();
+                    API.auth.logout();
+                } else {
+                    alert(result.message || '修改密码失败');
+                }
+            } catch (error) {
+                console.error('Change password error:', error);
+                alert('修改密码失败，请重试');
+            }
+        });
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            loadProfile();
+        });
+
+        // Close modal on overlay click
+        document.getElementById('changePasswordModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeChangePasswordModal();
+            }
+        });
+    </script>
+</body>
+</html>

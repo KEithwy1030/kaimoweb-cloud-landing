@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - VPN系统</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #6c757d;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, .05);
+            font-weight: 600;
+        }
+
+        .config-editor {
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">🌩️ VPN管理后台</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" onclick="showSection('nodes')">节点管理</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="showSection('config')">订阅配置规则</a>
+                    </li>
+                </ul>
+                <div class="d-flex">
+                    <a href="/dashboard" class="btn btn-outline-light btn-sm">返回仪表盘</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container main-content">
+        <!-- 节点管理部分 -->
+        <div id="section-nodes">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>节点列表 (Node Management)</h3>
+                <button class="btn btn-primary" onclick="showNodeModal()">
+                    <i class="bi bi-plus-lg"></i> 新增节点
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>排序</th>
+                                    <th>名称 (Name)</th>
+                                    <th>地址 (Host)</th>
+                                    <th>标签 (Tags)</th>
+                                    <th>地区 (Flag)</th>
+                                    <th>倍率</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nodesTableBody">
+                                <!-- Nodes will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配置编辑器部分 -->
+        <div id="section-config" style="display: none;">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>客户端订阅配置 (Clash Profile Template)</h3>
+                <button class="btn btn-success" onclick="saveConfig()">
+                    <i class="bi bi-save"></i> 保存配置
+                </button>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between">
+                            <span>YAML 规则编辑器</span>
+                            <small class="text-muted">此处配置将作为用户订阅的基础模板</small>
+                        </div>
+                        <div class="card-body">
+                            <textarea id="configEditor" class="form-control config-editor"
+                                spellcheck="false"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 节点编辑/新增 模态框 -->
+    <div class="modal fade" id="nodeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="nodeModalTitle">编辑节点</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="nodeForm">
+                        <input type="hidden" id="nodeId">
+                        <div class="mb-3">
+                            <label class="form-label">显示名称 (Name)</label>
+                            <input type="text" class="form-control" id="nodeName" placeholder="例如: 🇸🇬 新加坡 - 极速专线">
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label class="form-label">主机地址 (Host/IP)</label>
+                                <input type="text" class="form-control" id="nodeHost" value="35.197.153.209">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">端口</label>
+                                <input type="number" class="form-control" id="nodePort" value="443">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">地区代码 (Flag)</label>
+                                <input type="text" class="form-control" id="nodeFlag" placeholder="sg, jp, us">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">排序权重</label>
+                                <input type="number" class="form-control" id="nodeSort" value="0">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">标签 (Tags)</label>
+                            <input type="text" class="form-control" id="nodeTags" placeholder="流媒体, 游戏, 晚高峰">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">类型 (Type)</label>
+                            <select class="form-select" id="nodeType">
+                                <option value="vless">VLESS</option>
+                                <option value="vmess">VMess</option>
+                                <option value="trojan">Trojan</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="submitNodeForm()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API Base URL
+        const API_BASE = '/admin';
+        let nodeModal;
+
+        // Auth Helper
+        function getAuthHeaders() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/static/pages/login.html';
+                return {};
+            }
+            return {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        // Generic Fetch Wrapper
+        async function fetchAuth(url, options = {}) {
+            const headers = { ...getAuthHeaders(), ...options.headers };
+            const res = await fetch(url, { ...options, headers });
+            if (res.status === 401 || res.status === 403) {
+                alert('登录已过期，请重新登录');
+                window.location.href = '/static/pages/login.html';
+                throw new Error('Unauthorized');
+            }
+            return res;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = '/static/pages/login.html';
+                return;
+            }
+
+            nodeModal = new bootstrap.Modal(document.getElementById('nodeModal'));
+            loadNodes();
+            loadConfig();
+        });
+
+        function showSection(section) {
+            document.getElementById('section-nodes').style.display = section === 'nodes' ? 'block' : 'none';
+            document.getElementById('section-config').style.display = section === 'config' ? 'block' : 'none';
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        // --- Node Management ---
+
+        async function loadNodes() {
+            try {
+                const res = await fetchAuth('/admin/nodes');
+                if (!res.ok) throw new Error('Failed to load nodes');
+                const nodes = await res.json();
+                renderNodes(nodes);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function renderNodes(nodes) {
+            const tbody = document.getElementById('nodesTableBody');
+            tbody.innerHTML = '';
+            nodes.forEach(node => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${node.id}</td>
+                    <td>${node.sort_order}</td>
+                    <td><span class="fw-bold">${node.name}</span></td>
+                    <td><small class="text-muted">${node.host}:${node.port}</small></td>
+                    <td><span class="badge bg-info text-dark">${node.tags || ''}</span></td>
+                    <td>${node.flag ? node.flag.toUpperCase() : '-'}</td>
+                    <td>${node.rate_multiplier}x</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick='editNode(${JSON.stringify(node)})'>
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteNode(${node.id})">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function showNodeModal(node = null) {
+            const isEdit = !!node;
+            document.getElementById('nodeModalTitle').textContent = isEdit ? '编辑节点' : '新增节点';
+            document.getElementById('nodeId').value = node ? node.id : '';
+            document.getElementById('nodeName').value = node ? node.name : '';
+            document.getElementById('nodeHost').value = node ? node.host : '35.197.153.209';
+            document.getElementById('nodePort').value = node ? node.port : '443';
+            document.getElementById('nodeFlag').value = node ? node.flag : '';
+            document.getElementById('nodeSort').value = node ? node.sort_order : '0';
+            document.getElementById('nodeTags').value = node ? node.tags : '';
+            document.getElementById('nodeType').value = node ? node.type : 'vless';
+
+            nodeModal.show();
+        }
+
+        function editNode(node) {
+            showNodeModal(node);
+        }
+
+        async function submitNodeForm() {
+            const id = document.getElementById('nodeId').value;
+            const data = {
+                name: document.getElementById('nodeName').value,
+                host: document.getElementById('nodeHost').value,
+                port: parseInt(document.getElementById('nodePort').value),
+                flag: document.getElementById('nodeFlag').value,
+                sort_order: parseInt(document.getElementById('nodeSort').value),
+                tags: document.getElementById('nodeTags').value,
+                type: document.getElementById('nodeType').value
+            };
+
+            try {
+                const url = id ? `/admin/nodes/${id}` : '/admin/nodes';
+                const method = id ? 'PUT' : 'POST';
+                // Using fetchAuth handling headers automatically
+                const res = await fetchAuth(url, {
+                    method: method,
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) throw new Error('Save failed');
+
+                nodeModal.hide();
+                loadNodes();
+            } catch (err) {
+                alert('保存失败: ' + err.message);
+            }
+        }
+
+        async function deleteNode(id) {
+            if (!confirm('确定要删除这个节点吗？')) return;
+            try {
+                await fetchAuth(`/admin/nodes/${id}`, { method: 'DELETE' });
+                loadNodes();
+            } catch (err) {
+                alert('删除失败');
+            }
+        }
+
+        // --- Config Management ---
+
+        async function loadConfig() {
+            try {
+                // key is hardcoded in backend endpoint? No, route is /config/{key}
+                const res = await fetchAuth('/admin/config/clash_template');
+                const data = await res.json();
+                document.getElementById('configEditor').value = data.value || getDefaultConfig();
+            } catch (err) {
+                document.getElementById('configEditor').value = getDefaultConfig();
+            }
+        }
+
+        async function saveConfig() {
+            const value = document.getElementById('configEditor').value;
+            try {
+                await fetchAuth('/admin/config', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        key: 'clash_template',
+                        value: value,
+                        description: 'Clash Subscription Template'
+                    })
+                });
+                alert('配置已保存！用户的订阅将立即生效。');
+            } catch (err) {
+                alert('保存失败');
+            }
+        }
+
+        function getDefaultConfig() {
+            return `port: 7890
+socks-port: 7891
+allow-lan: true
+mode: Rule
+log-level: info
+external-controller: :9090
+
+proxies:
+  # The nodes will be automatically inserted here
+
+proxy-groups:
+  - name: 节点选择
+    type: select
+    proxies:
+      - 自动选择
+      - 🇸🇬 新加坡
+      - 🇯🇵 日本
+      - 🇺🇸 美国
+  
+  - name: 自动选择
+    type: url-test
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    proxies:
+      - 🇸🇬 新加坡
+      - 🇯🇵 日本
+      - 🇺🇸 美国
+
+rules:
+  - DOMAIN-SUFFIX,google.com,节点选择
+  - DOMAIN-KEYWORD,google,节点选择
+  - DOMAIN,google.com,节点选择
+  - DOMAIN-SUFFIX,github.com,节点选择
+  - GEOIP,CN,DIRECT
+  - MATCH,节点选择`;
+        }
+    </script>
+</body>
+
+</html>

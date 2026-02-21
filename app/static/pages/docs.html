@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用文档 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+<body>
+    <div class="docs-container">
+        <nav class="docs-nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-title">VPN Distribution</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        控制面板
+                    </a>
+                    <a href="/shop" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                        </svg>
+                        购买订阅
+                    </a>
+                    <a href="/my_order" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6"/>
+                        </svg>
+                        我的订单
+                    </a>
+                    <a href="/docs" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                        </svg>
+                        使用文档
+                    </a>
+                    <a href="/profile" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        个人中心
+                    </a>
+                    <a href="/flow" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        流量明细
+                    </a>
+                </div>
+
+                <button class="nav-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    退出
+                </button>
+            </div>
+        </nav>
+
+        <main class="docs-main">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">使用文档</h1>
+                    <p class="page-subtitle">客户端下载与使用教程</p>
+                </div>
+
+                <div class="welcome-banner">
+                    <div class="welcome-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="16" x2="12" y2="12"/>
+                            <line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                    </div>
+                    <div class="welcome-content">
+                        <h3>欢迎查阅文档！</h3>
+                        <p>在这里你可以找到各平台VPN客户端的使用教程和下载链接。</p>
+                    </div>
+                </div>
+
+                <div class="docs-grid">
+                    <div class="doc-card">
+                        <div class="doc-platform">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.451L22 2.1v9.451H10.95M0 12.6h9.75v9.451H0m10.949 0H22v9.451H10.949"/>
+                            </svg>
+                            Windows
+                        </div>
+                        <h3 class="doc-title">Windows 教程</h3>
+                        <p class="doc-desc">Windows系统客户端使用教程，支持Windows 10/11系统。推荐使用Clash Verge。</p>
+                        <a href="https://github.com/Clash-Hub/Clash_For_Windows_Download" target="_blank" class="doc-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                            </svg>
+                            查看教程
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-platform">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54a2.002 2.002 0 00-2.009 2.001V14c.001-.09.031-.547.031-.547h-2.54v6.878C6.657 21.128 3 16.991 3 12c0-5.523 4.477-10 10-10z"/>
+                            </svg>
+                            Mac
+                        </div>
+                        <h3 class="doc-title">Mac 教程</h3>
+                        <p class="doc-desc">Mac/苹果电脑客户端使用教程，支持macOS 10.15+系统。推荐使用ClashX Pro。</p>
+                        <a href="https://github.com/yichengchen/clashX" target="_blank" class="doc-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                            </svg>
+                            查看教程
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-platform">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.523 15.3414c-.5511 0-.9993-.4486-.9993-.9997v-3.316c0-2.373-1.4954-3.874-3.6482-3.874-2.1528 0-3.6482 1.501-3.6482 3.874v3.315c0 .5512-.4482.9998-.9993.9998-.5511 0-.9993-.4486-.9993-.9997v-3.316c0-2.373-1.4954-3.874-3.6482-3.874-2.1528 0-3.6482 1.501-3.6482 3.874v3.315c0 .5512-.4482.9998-.9993.9998-.5511 0-.9993-.4486-.9993-.9997V6.0076c0-2.6554 2.1184-4.81 4.7338-4.81 2.6154 0 4.7338 2.1546 4.7338 4.81v8.334c0 .5512-.4482.9998-.9993.9998z"/>
+                            </svg>
+                            Android
+                        </div>
+                        <h3 class="doc-title">Android 教程</h3>
+                        <p class="doc-desc">Android系统客户端使用教程，推荐使用Clash Meta For Android。</p>
+                        <a href="https://github.com/MetaCubeX/ClashMetaForAndroid" target="_blank" class="doc-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                            </svg>
+                            查看教程
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-platform">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M18.71 19.5c-.83 1.24-1.71 2.45-2.62 3.61-1.43 1.74-3.32 2.61-5.66 2.61-2.35 0-4.24-.87-5.66-2.61-.91-1.16-1.79-2.37-2.62-3.61-1.37-2.05-2.31-4.3-2.73-6.56l3.77-3.77c.89.77 1.84 1.69 2.82 2.38 3.19.64.33 1.28.48 1.94.46 1.3-.02 2.58-.17 3.8-.55.52-.16.98-.39 1.36-.7.49-.41.77-.96.77-1.56 0-.81.45-1.57 1.07-2.1.83-.69 1.96-1.22 3.19-1.48 1.23.26 2.36.79 3.19 1.48.62.53 1.07 1.29 1.07 2.1 0 .6-.28 1.15-.77 1.56-.38.31-.84.54-1.36.7-1.22.38-2.5.53-3.8.55-.66.02-1.3-.13-1.94-.46-.69-.37-1.49-.88-2.38-3.19L15.97 4.1c.42 2.26 1.36 4.51 2.73 6.56.83 1.24 1.71 2.45 2.62 3.61 1.43 1.74 3.32 2.61 5.66 2.61 2.35 0 4.24-.87 5.66-2.61.91-1.16 1.79-2.37 2.62-3.61 1.37-2.05 2.31-4.3 2.73-6.56l-3.77 3.77c-.89-.77-1.84-1.69-2.38-3.19z"/>
+                            </svg>
+                            iPhone/iPad
+                        </div>
+                        <h3 class="doc-title">iPhone/iPad 教程</h3>
+                        <p class="doc-desc">iOS系统客户端使用教程，推荐使用Shadowrocket（小火箭）。</p>
+                        <a href="https://apps.apple.com/cn/app/shadowrocket/id932747118" target="_blank" class="doc-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                            </svg>
+                            查看教程
+                        </a>
+                    </div>
+
+                    <div class="doc-card">
+                        <div class="doc-platform">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12.007 0C5.379 0 0 5.379 0 12.007c0 6.628 5.379 12.007 12.007 12.007 6.628 0 12.007-5.379 12.007-12.007C24.014 5.379 18.635 0 12.007 0zm.007 22.014c-5.525 0-10.007-4.482-10.007-10.007S6.482 2 12.007 2s10.007 4.482 10.007 10.007-4.482 10.007-10.007 10.007zM6.01 8.99l-1.926 1.115a.724.724 0 01-.991-.267l-.322-.558a.724.724 0 01.267-.991l1.925-1.115a.724.724 0 01.991.267l.322.558a.724.724 0 01-.267.991zM12 6.5c-1.5 0-2.908.4-4.124 1.088l.762 1.318a5.506 5.506 0 013.362-1.135c1.26 0 2.428.4 3.362 1.135l.762-1.318A6.492 6.492 0 0012 6.5zm0 11c-3.034 0-5.5-2.466-5.5-5.5h-1.5c0 3.862 3.138 7 7 7s7-3.138 7-7h-1.5c0 3.034-2.466 5.5-5.5 5.5zm5.983-2.395l-1.925 1.115a.724.724 0 01-.991-.267l-.322-.558a.724.724 0 01.267-.991l1.925-1.115a.724.724 0 01.991.267l.322.558a.724.724 0 01-.267.991z"/>
+                            </svg>
+                            Linux
+                        </div>
+                        <h3 class="doc-title">Linux 教程</h3>
+                        <p class="doc-desc">Linux系统客户端使用教程，推荐使用Clash Verge Rev或v2rayA。</p>
+                        <a href="https://github.com/clash-verge-rev/clash-verge-rev" target="_blank" class="doc-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                                <polyline points="15 3 21 3 21 9"/>
+                            </svg>
+                            查看教程
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function logout() {
+            API.auth.logout();
+            window.location.href = '/login';
+        }
+    </script>
+</body>
+</html>

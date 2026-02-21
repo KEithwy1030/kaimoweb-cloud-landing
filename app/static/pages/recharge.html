@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账户充值 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+
+<body>
+    <nav class="recharge-nav">
+        <a href="/dashboard" style="color: var(--cyber-text-primary); text-decoration: none;">← 返回控制面板</a>
+    </nav>
+    <main class="recharge-main">
+        <div class="recharge-card">
+            <h1 class="recharge-title">模拟余额充值</h1>
+            <p style="color: var(--cyber-text-muted); margin-bottom: 2rem;">演示环境：输入任意金额即可模拟充值到账</p>
+            <div class="input-group">
+                <label>充值金额 (CNY)</label>
+                <input type="number" id="amount" class="recharge-input" value="50" min="1">
+            </div>
+            <button class="recharge-btn" onclick="doRecharge()">立即充值</button>
+        </div>
+    </main>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        async function doRecharge() {
+            const amount = document.getElementById('amount').value;
+            const btn = document.querySelector('.recharge-btn');
+            btn.disabled = true;
+            btn.innerText = '充值中...';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/wallet/recharge?amount=${amount}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+                if (result.code === 0) {
+                    alert(result.message);
+                    window.location.href = '/dashboard';
+                } else {
+                    alert(result.message || '充值失败');
+                }
+            } catch (error) {
+                alert('网络错误');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '立即充值';
+            }
+        }
+    </script>
+</body>
+
+</html>

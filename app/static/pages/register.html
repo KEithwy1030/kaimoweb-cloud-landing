@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>注册 - VPN Distribution System</title>
+    <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-card">
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                    </div>
+                    <h1 class="auth-title">VPN Distribution</h1>
+                    <p class="auth-subtitle">创建新账户</p>
+                </div>
+
+                <div id="alertBox" class="auth-alert">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                    </svg>
+                    <span id="alertMessage"></span>
+                </div>
+
+                <form id="registerForm" class="auth-form">
+                    <div class="input-group" id="emailGroup">
+                        <input type="email" class="auth-input" id="email" placeholder="邮箱地址" required
+                            autocomplete="email">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <path d="M22 6l-10 7L2 6" />
+                        </svg>
+                    </div>
+
+                    <div class="input-group" id="passwordGroup">
+                        <input type="password" class="auth-input" id="password" placeholder="密码 (至少6位)" required
+                            autocomplete="new-password">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                <circle cx="12" cy="12" r="3" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="password-strength">
+                        <span>密码强度</span>
+                        <div class="strength-bar">
+                            <div id="strengthFill" class="strength-fill"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" id="confirmPasswordGroup" style="margin-top: 16px;">
+                        <input type="password" class="auth-input" id="confirmPassword" placeholder="确认密码" required
+                            autocomplete="new-password">
+                        <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember-me">
+                            <input type="checkbox" id="terms" required>
+                            <span>我已阅读并同意 <a href="/static/docs/terms.html" target="_blank">服务条款</a> 和 <a
+                                    href="/static/docs/privacy.html" target="_blank">隐私政策</a></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="auth-btn" id="registerBtn">
+                        <span class="btn-text">注册</span>
+                    </button>
+                </form>
+
+                <div class="divider"><span>或</span></div>
+
+                <p class="register-link">
+                    已有账户? <a href="/login">立即登录</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function showAlert(message, type = 'error') {
+            const alertBox = document.getElementById('alertBox');
+            const alertMessage = document.getElementById('alertMessage');
+            alertBox.className = `auth-alert show ${type}`;
+            alertMessage.textContent = message;
+            setTimeout(() => alertBox.classList.remove('show'), 5000);
+        }
+
+        function togglePassword(id) {
+            const input = document.getElementById(id);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        document.getElementById('password').addEventListener('input', function () {
+            const val = this.value;
+            const fill = document.getElementById('strengthFill');
+            fill.className = 'strength-fill';
+            if (val.length >= 10) fill.classList.add('strong');
+            else if (val.length >= 6) fill.classList.add('medium');
+            else if (val.length > 0) fill.classList.add('weak');
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const registerBtn = document.getElementById('registerBtn');
+
+            if (password !== confirmPassword) {
+                return showAlert('两次输入的密码不一致');
+            }
+            if (password.length < 6) {
+                return showAlert('密码长度至少为6位');
+            }
+
+            registerBtn.disabled = true;
+            registerBtn.innerHTML = '<span class="spinner"></span>';
+
+            try {
+                const data = await API.auth.register(email, password);
+                if (data.code === 0) {
+                    showAlert('注册成功！正在跳转至登录页...', 'success');
+                    setTimeout(() => window.location.href = '/login', 1500);
+                } else {
+                    showAlert(data.message || '注册失败，请检查输入');
+                }
+            } catch (error) {
+                showAlert('网络错误，请稍后重试');
+            } finally {
+                registerBtn.disabled = false;
+                registerBtn.innerHTML = '<span class="btn-text">注册</span>';
+            }
+        });
+    </script>
+</body>
+
+</html>

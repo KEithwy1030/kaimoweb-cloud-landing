@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收银台 - VPN Distribution System</title>
+    <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+
+<body>
+    <nav class="payment-nav">
+        <div class="nav-content">
+            <a href="/dashboard" class="nav-brand">
+                <div class="nav-logo">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                    </svg>
+                </div>
+                <span class="nav-title">VPN Distribution</span>
+            </a>
+        </div>
+    </nav>
+
+    <main class="payment-main">
+        <div class="payment-container">
+            <!-- Payment Card -->
+            <div class="payment-card" id="paymentCard">
+                <div class="payment-header">
+                    <div class="payment-title">收银台</div>
+                    <div class="payment-amount" id="paymentAmount">¥0.00</div>
+                </div>
+                <div class="payment-body">
+                    <div class="order-info">
+                        <div class="order-info-row">
+                            <span class="order-info-label">订单号</span>
+                            <span class="order-info-value" id="orderNumber">-</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span class="order-info-label">商品名称</span>
+                            <span class="order-info-value" id="planName">-</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span class="order-info-label">流量</span>
+                            <span class="order-info-value" id="planTraffic">-</span>
+                        </div>
+                        <div class="order-info-row">
+                            <span class="order-info-label">周期</span>
+                            <span class="order-info-value" id="planPeriod">-</span>
+                        </div>
+                    </div>
+
+                    <div class="payment-methods">
+                        <div class="payment-tab active" data-method="alipay" onclick="selectPayment('alipay')">
+                            <div class="payment-tab-icon">💳</div>
+                            <div class="payment-tab-label">支付宝</div>
+                        </div>
+                        <div class="payment-tab" data-method="wechat" onclick="selectPayment('wechat')">
+                            <div class="payment-tab-icon">💚</div>
+                            <div class="payment-tab-label">微信支付</div>
+                        </div>
+                    </div>
+
+                    <div class="qr-section">
+                        <div class="qr-code" id="qrCode">
+                            <div class="qr-placeholder">加载中...</div>
+                        </div>
+                        <p class="payment-hint">
+                            请使用<span id="paymentMethod">支付宝</span>扫描二维码支付<br>
+                            <strong>备注订单号后6位：<span id="orderLast6">-</span></strong>
+                        </p>
+                    </div>
+
+                    <div class="contact-info">
+                        支付后请联系客服开通：<strong id="adminContact">-</strong>
+                    </div>
+                </div>
+
+                <div class="payment-actions">
+                    <button class="btn btn-secondary" onclick="window.history.back()">返回</button>
+                    <button class="btn btn-primary" onclick="checkPaymentStatus()">我已支付</button>
+                    <button class="btn btn-primary"
+                        style="background: var(--cyber-gradient-secondary); margin-left:10px;"
+                        onclick="simulateInstantPay()">模拟自动支付</button>
+                </div>
+            </div>
+
+            <!-- Checking State -->
+            <div class="payment-card" id="checkingCard" style="display: none;">
+                <div class="checking-container">
+                    <div class="spinner"></div>
+                    <h3 class="success-title">确认支付状态</h3>
+                    <p class="success-desc">正在确认支付状态，请稍候...</p>
+                </div>
+            </div>
+
+            <!-- Success State -->
+            <div class="payment-card" id="successCard" style="display: none;">
+                <div class="payment-header">
+                    <div class="payment-title">支付成功</div>
+                </div>
+                <div class="success-container">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <h3 class="success-title">支付成功！</h3>
+                    <p class="success-desc">您的VPN已开通，订阅信息已发送到您的账户</p>
+                    <button class="btn btn-primary" onclick="window.location.href='/dashboard'"
+                        style="margin-top: var(--cyber-spacing-lg);">
+                        返回首页
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentOrderId = null;
+        let currentMethod = 'alipay';
+        let statusCheckInterval = null;
+
+        function getOrderIdFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('order');
+        }
+
+        function selectPayment(method) {
+            currentMethod = method;
+            document.querySelectorAll('.payment-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelector(`[data-method="${method}"]`).classList.add('active');
+
+            const methodNames = { alipay: '支付宝', wechat: '微信' };
+            document.getElementById('paymentMethod').textContent = methodNames[method];
+
+            // 切换时重新加载二维码（发起支付请求）
+            initiateHupijiaoPay();
+        }
+
+        async function initiateHupijiaoPay() {
+            const qrCode = document.getElementById('qrCode');
+            qrCode.innerHTML = '<div class="qr-placeholder">正在生成二维码...</div>';
+
+            try {
+                const result = await API.payment.hupijiaoPay(currentOrderId);
+                if (result.code === 0 && result.data.url_qrcode) {
+                    qrCode.innerHTML = `<img src="${result.data.url_qrcode}" alt="支付二维码" style="max-width:200px">`;
+                    // 如果有跳转链接，可以提供一个辅助按钮
+                    if (result.data.url) {
+                        const hint = document.querySelector('.payment-hint');
+                        hint.innerHTML += `<br><a href="${result.data.url}" target="_blank" style="color: var(--cyber-primary); font-size: 0.8rem; text-decoration: underline;">无法扫码？点击此处跳转支付</a>`;
+                    }
+                } else {
+                    showPlaceholder();
+                }
+            } catch (e) {
+                console.error('Hupijiao Pay error:', e);
+                showPlaceholder();
+            }
+        }
+
+        function showPlaceholder() {
+            const methodNames = { alipay: '支付宝', wechat: '微信' };
+            document.getElementById('qrCode').innerHTML = `<div class="qr-placeholder">${methodNames[currentMethod]}支付发起失败<br>请稍后重试或联系客服</div>`;
+        }
+
+        async function loadOrderInfo() {
+            currentOrderId = getOrderIdFromUrl();
+            if (!currentOrderId) {
+                alert('订单ID不存在');
+                window.location.href = '/shop';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/payment/order/${currentOrderId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+
+                if (result.code === 0) {
+                    const data = result.data;
+                    document.getElementById('paymentAmount').textContent = `¥${data.amount.toFixed(2)}`;
+                    document.getElementById('orderNumber').textContent = data.order_number;
+                    document.getElementById('planName').textContent = data.plan_name;
+                    document.getElementById('planTraffic').textContent = `${data.plan_traffic} GB`;
+                    document.getElementById('orderLast6').textContent = data.order_number.slice(-6);
+
+                    const periodNames = {
+                        '1month': '1个月',
+                        '3month': '3个月',
+                        '6month': '6个月',
+                        '1year': '1年',
+                        'onetime': '永久'
+                    };
+                    document.getElementById('planPeriod').textContent = periodNames[data.plan_period] || data.plan_period;
+                    document.getElementById('adminContact').textContent = data.contact;
+
+                    loadQRCode(currentMethod);
+                } else {
+                    alert(result.message);
+                    window.location.href = '/shop';
+                }
+            } catch (error) {
+                console.error('加载订单信息失败:', error);
+                alert('加载订单信息失败');
+                window.location.href = '/shop';
+            }
+        }
+
+        async function checkPaymentStatus() {
+            document.getElementById('paymentCard').style.display = 'none';
+            document.getElementById('checkingCard').style.display = 'block';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/payment/status/${currentOrderId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+
+                if (result.code === 0) {
+                    const status = result.data.status;
+
+                    if (status === 'completed') {
+                        showSuccess(result.data);
+                    } else if (status === 'verifying') {
+                        alert('支付凭证已提交，请等待管理员审核开通');
+                        document.getElementById('checkingCard').style.display = 'none';
+                        document.getElementById('paymentCard').style.display = 'block';
+                    } else {
+                        await submitPaymentProof();
+                    }
+                }
+            } catch (error) {
+                console.error('检查支付状态失败:', error);
+                alert('检查支付状态失败');
+                document.getElementById('checkingCard').style.display = 'none';
+                document.getElementById('paymentCard').style.display = 'block';
+            }
+        }
+
+        async function simulateInstantPay() {
+            if (!currentOrderId) return;
+            const btn = document.querySelector('button[onclick="simulateInstantPay()"]');
+            btn.disabled = true;
+            btn.innerText = '正在支付...';
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch(`/api/payment/instant-pay/${currentOrderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                const result = await response.json();
+                if (result.code === 0) {
+                    showSuccess(result.data);
+                } else {
+                    alert(result.message || '即时支付失败');
+                }
+            } catch (error) {
+                alert('网络错误');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '模拟自动支付';
+            }
+        }
+
+        async function submitPaymentProof() {
+            const transactionId = prompt('请输入支付宝/微信交易号：');
+            if (!transactionId) {
+                document.getElementById('checkingCard').style.display = 'none';
+                document.getElementById('paymentCard').style.display = 'block';
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('token');
+                const response = await fetch('/api/payment/submit-proof', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        order_id: parseInt(currentOrderId),
+                        payment_method: currentMethod,
+                        transaction_id: transactionId
+                    })
+                });
+                const result = await response.json();
+
+                if (result.code === 0) {
+                    alert('支付凭证已提交！请等待管理员审核开通。');
+                    startStatusPolling();
+                } else {
+                    alert(result.message);
+                    document.getElementById('checkingCard').style.display = 'none';
+                    document.getElementById('paymentCard').style.display = 'block';
+                }
+            } catch (error) {
+                console.error('提交支付凭证失败:', error);
+                alert('提交支付凭证失败');
+                document.getElementById('checkingCard').style.display = 'none';
+                document.getElementById('paymentCard').style.display = 'block';
+            }
+        }
+
+        function startStatusPolling() {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+            }
+
+            statusCheckInterval = setInterval(async () => {
+                try {
+                    const token = localStorage.getItem('token');
+                    const response = await fetch(`/api/payment/status/${currentOrderId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const result = await response.json();
+
+                    if (result.code === 0 && result.data.status === 'completed') {
+                        clearInterval(statusCheckInterval);
+                        showSuccess(result.data);
+                    }
+                } catch (error) {
+                    console.error('轮询支付状态失败:', error);
+                }
+            }, 5000);
+        }
+
+        function showSuccess(data) {
+            document.getElementById('checkingCard').style.display = 'none';
+            document.getElementById('paymentCard').style.display = 'none';
+            document.getElementById('successCard').style.display = 'block';
+
+            if (data && data.subscription && data.subscription.vless_url) {
+                const sub = data.subscription;
+                const successContainer = document.querySelector('.success-container');
+                const nodeInfo = document.createElement('div');
+                nodeInfo.style.marginTop = '20px';
+                nodeInfo.style.textAlign = 'left';
+                nodeInfo.innerHTML = `
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">代理节点链接 (VLESS):</p>
+                    <div style="background: #f4f4f4; padding: 12px; border-radius: 8px; word-break: break-all; font-size: 0.8rem; border: 1px solid #ddd; margin-bottom: 12px; font-family: monospace;">
+                        ${sub.vless_url}
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; height: 40px; font-size: 0.9rem;" onclick="navigator.clipboard.writeText('${sub.vless_url}').then(() => alert('节点链接已复制！'))">
+                        复制节点到剪贴板
+                    </button>
+                `;
+                // Insert before the "Back to Dashboard" button
+                const backBtn = successContainer.querySelector('button');
+                successContainer.insertBefore(nodeInfo, backBtn);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadOrderInfo();
+            startStatusPolling(); // 页面加载后立即开始轮询支付状态
+        });
+
+        window.addEventListener('beforeunload', () => {
+            if (statusCheckInterval) {
+                clearInterval(statusCheckInterval);
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>订阅商店 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+
+<body>
+    <div class="shop-container">
+        <nav class="shop-nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                        </svg>
+                    </div>
+                    <span class="nav-title">VPN Distribution</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        控制面板
+                    </a>
+                    <a href="/shop" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                        </svg>
+                        购买订阅
+                    </a>
+                    <a href="/my_order" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                            <path d="M14 2v6h6" />
+                        </svg>
+                        我的订单
+                    </a>
+                    <a href="/docs" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                        </svg>
+                        使用文档
+                    </a>
+                    <a href="/profile" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        个人中心
+                    </a>
+                    <a href="/flow" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                        流量明细
+                    </a>
+                </div>
+
+                <div class="nav-user">
+                    <button class="nav-logout" onclick="logout()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        退出
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="shop-main">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">订阅商店</h1>
+                    <p class="page-subtitle">选择适合您的VPN订阅套餐</p>
+                </div>
+
+                <div class="warning-banner">
+                    <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+                        <line x1="12" y1="9" x2="12" y2="13" />
+                        <line x1="12" y1="17" x2="12.01" y2="17" />
+                    </svg>
+                    <div class="warning-content">
+                        <h4>购买请注意</h4>
+                        <p>更换套餐将覆盖当前套餐！请谨慎选择适合您的订阅计划。</p>
+                    </div>
+                </div>
+
+                <div class="plans-grid" id="plansGrid">
+                    <div class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>正在加载套餐...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function logout() {
+            API.auth.logout();
+            window.location.href = '/login';
+        }
+
+        function getPeriodText(period) {
+            const periods = {
+                'month': '月',
+                'quarter': '季',
+                'half_year': '半年',
+                'year': '年'
+            };
+            return periods[period] || period;
+        }
+
+        async function loadPlans() {
+            try {
+                const result = await API.plans.list();
+
+                if (result.code === 0 && result.data && result.data.plans && result.data.plans.length > 0) {
+                    renderPlans(result.data.plans);
+                } else {
+                    document.getElementById('plansGrid').innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
+                                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                                    <line x1="12" y1="22.08" x2="12" y2="12"/>
+                                </svg>
+                            </div>
+                            <h3>暂无可用套餐</h3>
+                            <p>请稍后再试或联系客服</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Load plans error:', error);
+                document.getElementById('plansGrid').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="12" y1="8" x2="12" y2="12"/>
+                                <line x1="12" y1="16" x2="12.01" y2="16"/>
+                            </svg>
+                        </div>
+                        <h3>加载失败</h3>
+                        <p>请刷新页面重试</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderPlans(plans) {
+            const grid = document.getElementById('plansGrid');
+            grid.innerHTML = plans.map(plan => `
+                <div class="plan-card">
+                    <span class="plan-badge">Standard</span>
+                    <h3 class="plan-name">${plan.name}</h3>
+                    <div class="plan-price">
+                        <span class="plan-currency">¥</span>
+                        <span class="plan-amount">${plan.price}</span>
+                        <span class="plan-period">/ ${getPeriodText(plan.period)}</span>
+                    </div>
+                    <button class="plan-buy-btn" onclick="buyPlan(${plan.id}, ${plan.price})">
+                        立即购买
+                    </button>
+                    <ul class="plan-features">
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            支持流媒体播放
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            不限制使用人数
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            不限制到期时间
+                        </li>
+                        <li>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            不限制网络速度
+                        </li>
+                    </ul>
+                    <div class="plan-details">
+                        <div class="plan-detail-item">
+                            <span class="plan-detail-label">周期流量</span>
+                            <span class="plan-detail-value">${plan.traffic_gb}GB</span>
+                        </div>
+                        <div class="plan-detail-item">
+                            <span class="plan-detail-label">速率</span>
+                            <span class="plan-detail-value">无限速</span>
+                        </div>
+                        <div class="plan-detail-item">
+                            <span class="plan-detail-label">计费周期</span>
+                            <span class="plan-detail-value">${getPeriodText(plan.period)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function buyPlan(planId, price) {
+            if (!confirm(`确定要购买此套餐吗？金额: ¥${price}`)) {
+                return;
+            }
+
+            try {
+                const result = await API.orders.create(planId);
+
+                if (result.code === 0) {
+                    window.location.href = `/payment?order=${result.data.order_id}`;
+                } else {
+                    alert(result.message || '创建订单失败');
+                }
+            } catch (error) {
+                console.error('Buy plan error:', error);
+                alert('创建订单失败，请重试');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function () {
+            loadPlans();
+        });
+    </script>
+</body>
+
+</html>

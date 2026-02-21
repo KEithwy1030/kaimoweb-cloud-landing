@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的订单 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+<body>
+    <div class="orders-container">
+        <nav class="orders-nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        </svg>
+                    </div>
+                    <span class="nav-title">VPN Distribution</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                        </svg>
+                        控制面板
+                    </a>
+                    <a href="/shop" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1"/>
+                            <circle cx="20" cy="21" r="1"/>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                        </svg>
+                        购买订阅
+                    </a>
+                    <a href="/my_order" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                            <path d="M14 2v6h6"/>
+                        </svg>
+                        我的订单
+                    </a>
+                    <a href="/docs" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20"/>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/>
+                        </svg>
+                        使用文档
+                    </a>
+                    <a href="/profile" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        个人中心
+                    </a>
+                    <a href="/flow" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                        流量明细
+                    </a>
+                </div>
+
+                <button class="nav-logout" onclick="logout()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    退出
+                </button>
+            </div>
+        </nav>
+
+        <main class="orders-main">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">我的订单</h1>
+                    <p class="page-subtitle">查看和管理您的所有订单</p>
+                </div>
+
+                <div class="orders-section">
+                    <div class="section-header">
+                        <h2 class="section-title">订单列表</h2>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>订单号</th>
+                                    <th>套餐周期</th>
+                                    <th>订单金额</th>
+                                    <th>订单状态</th>
+                                    <th>创建时间</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="loading-state">
+                                            <div class="loading-spinner"></div>
+                                            <p>正在加载订单...</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function logout() {
+            API.auth.logout();
+            window.location.href = '/login';
+        }
+
+        function getPeriodText(period) {
+            const periods = {
+                'month': '月',
+                'quarter': '季',
+                'half_year': '半年',
+                'year': '年'
+            };
+            return periods[period] || period;
+        }
+
+        function getStatusClass(status) {
+            const classes = {
+                'pending': 'status-pending',
+                'completed': 'status-completed',
+                'cancelled': 'status-cancelled'
+            };
+            return classes[status] || '';
+        }
+
+        function getStatusText(status) {
+            const texts = {
+                'pending': '待支付',
+                'completed': '已完成',
+                'cancelled': '已关闭'
+            };
+            return texts[status] || status;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            return date.toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        async function loadOrders() {
+            try {
+                const result = await API.orders.list();
+
+                if (result.code === 0 && result.data && result.data.length > 0) {
+                    renderOrders(result.data);
+                } else {
+                    document.getElementById('ordersTableBody').innerHTML = `
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                                            <path d="M14 2v6h6"/>
+                                            <line x1="16" y1="13" x2="8" y2="13"/>
+                                            <line x1="16" y1="17" x2="8" y2="17"/>
+                                            <line x1="10" y1="9" x2="8" y2="9"/>
+                                        </svg>
+                                    </div>
+                                    <h3>暂无订单记录</h3>
+                                    <p>您还没有创建任何订单</p>
+                                    <a href="/shop" class="btn btn-primary" style="display: inline-flex; margin-top: var(--cyber-spacing-md);">前往购买</a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            } catch (error) {
+                console.error('Load orders error:', error);
+                document.getElementById('ordersTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="6">
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"/>
+                                        <line x1="12" y1="8" x2="12" y2="12"/>
+                                        <line x1="12" y1="16" x2="12.01" y2="16"/>
+                                    </svg>
+                                </div>
+                                <h3>加载失败</h3>
+                                <p>请刷新页面重试</p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderOrders(orders) {
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = orders.map(order => `
+                <tr>
+                    <td><span class="order-number">${order.order_number}</span></td>
+                    <td>${getPeriodText(order.period)}</td>
+                    <td><span class="order-amount">¥${order.amount.toFixed(2)}</span></td>
+                    <td><span class="status-badge ${getStatusClass(order.status)}">${getStatusText(order.status)}</span></td>
+                    <td style="font-size: 0.8rem;">${formatDate(order.created_at)}</td>
+                    <td>
+                        ${order.status === 'pending' ? `
+                            <button class="action-btn action-pay" onclick="payOrder(${order.id})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                                    <line x1="1" y1="10" x2="23" y2="10"/>
+                                </svg>
+                                去支付
+                            </button>
+                        ` : order.status === 'completed' ? `
+                            <button class="action-btn action-disabled" disabled>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                已完成
+                            </button>
+                        ` : `
+                            <button class="action-btn action-disabled" disabled>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                                已关闭
+                            </button>
+                        `}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function payOrder(orderId) {
+            if (!confirm('确定要支付此订单吗？')) {
+                return;
+            }
+
+            try {
+                const result = await API.orders.pay(orderId);
+
+                if (result.code === 0) {
+                    alert('支付成功！');
+                    loadOrders();
+                } else {
+                    alert(result.message || '支付失败');
+                }
+            } catch (error) {
+                console.error('Pay order error:', error);
+                alert('支付失败，请重试');
+            }
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function() {
+            loadOrders();
+        });
+    </script>
+</body>
+</html>

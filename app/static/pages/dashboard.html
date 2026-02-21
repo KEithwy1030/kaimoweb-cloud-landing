@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>控制面板 - VPN Distribution System</title>
+        <link rel="stylesheet" href="/static/css/style-v3.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Shared Styles */
+    </style>
+</head>
+
+<body>
+    <div class="dashboard-container">
+        <nav class="dashboard-nav">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <div class="nav-logo">
+                        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z" />
+                        </svg>
+                    </div>
+                    <span class="nav-title">VPN Distribution</span>
+                </div>
+
+                <div class="nav-links">
+                    <a href="/dashboard" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+                        </svg>
+                        控制面板
+                    </a>
+                    <a href="/shop" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="9" cy="21" r="1" />
+                            <circle cx="20" cy="21" r="1" />
+                            <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6" />
+                        </svg>
+                        购买订阅
+                    </a>
+                    <a href="/my_order" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                            <path d="M14 2v6h6" />
+                            <path d="M16 13H8" />
+                            <path d="M16 17H8" />
+                            <path d="M10 9H8" />
+                        </svg>
+                        我的订单
+                    </a>
+                    <a href="/docs" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                        </svg>
+                        使用文档
+                    </a>
+                    <a href="/profile" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
+                        </svg>
+                        个人中心
+                    </a>
+                    <a href="/flow" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                        </svg>
+                        流量明细
+                    </a>
+                </div>
+
+                <div class="nav-user">
+                    <div class="nav-user-info">
+                        <div class="nav-user-name" id="navUserName">User</div>
+                        <div class="nav-user-email" id="navUserEmail">user@example.com</div>
+                    </div>
+                    <button class="nav-logout" onclick="logout()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                            <polyline points="16 17 21 12 16 7" />
+                            <line x1="21" y1="12" x2="9" y2="12" />
+                        </svg>
+                        退出
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <main class="dashboard-main">
+            <div class="container">
+                <div class="page-header">
+                    <h1 class="page-title">控制面板</h1>
+                    <p class="page-subtitle">欢迎回来，管理您的VPN订阅</p>
+                    <div class="page-actions">
+                        <a href="/docs" class="btn btn-secondary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                                <polyline points="7 10 12 15 17 10" />
+                                <line x1="12" y1="15" x2="12" y2="3" />
+                            </svg>
+                            下载客户端
+                        </a>
+                        <a href="/shop" class="btn btn-primary">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+                            </svg>
+                            续费订阅
+                        </a>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">钱包余额</span>
+                            <div class="stat-icon balance">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="5" width="20" height="14" rx="2" />
+                                    <line x1="2" y1="10" x2="22" y2="10" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="balance">0.00 <span
+                                style="font-size: 1rem; color: var(--cyber-text-muted);">CNY</span></div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-bar">
+                                <div class="stat-progress-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="stat-info">
+                            上次记录 <span id="lastBalance">0.00</span> CNY
+                            <a href="/recharge"
+                                style="color: var(--cyber-primary); margin-left:10px; text-decoration: none;">[去充值]</a>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">流量使用</span>
+                            <div class="stat-icon traffic">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="traffic">0 / 0 <span
+                                style="font-size: 1rem; color: var(--cyber-text-muted);">GB</span></div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-bar">
+                                <div class="stat-progress-fill" id="trafficBar" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="stat-info">已使用 <span id="usedTraffic">0.00</span> GB</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="stat-label">可用佣金</span>
+                            <div class="stat-icon commission">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23" />
+                                    <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="commission">0.00 <span
+                                style="font-size: 1rem; color: var(--cyber-text-muted);">CNY</span></div>
+                        <div class="stat-progress">
+                            <div class="stat-progress-bar">
+                                <div class="stat-progress-fill" style="width: 100%;"></div>
+                            </div>
+                        </div>
+                        <div class="stat-info">确认中 <span id="pendingCommission">0.00</span> CNY</div>
+                    </div>
+                </div>
+
+                <div class="subscription-section">
+                    <div class="section-header">
+                        <h2 class="section-title">我的订阅</h2>
+                        <div class="section-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="loadDashboard()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="23 4 23 10 17 10" />
+                                    <polyline points="1 20 1 14 7 14" />
+                                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15" />
+                                </svg>
+                                刷新
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="subscription-content" id="subscriptionContent">
+                        <div class="subscription-info">
+                            <h3 class="subscription-name" id="planName">-</h3>
+                            <p class="subscription-desc" id="planDesc">-</p>
+                        </div>
+
+                        <div class="quick-actions">
+                            <div class="action-card" onclick="showSubscriptionModal()">
+                                <div class="action-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71" />
+                                        <path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71" />
+                                    </svg>
+                                </div>
+                                <div class="action-title">订阅链接</div>
+                                <div class="action-desc">获取订阅地址和二维码</div>
+                            </div>
+
+                            <a href="/docs" class="action-card" style="text-decoration: none;">
+                                <div class="action-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                                    </svg>
+                                </div>
+                                <div class="action-title">使用教程</div>
+                                <div class="action-desc">查看客户端使用指南</div>
+                            </a>
+
+                            <div class="action-card" onclick="showResetTrafficModal()">
+                                <div class="action-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8" />
+                                        <path d="M21 3v5h-5" />
+                                        <path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16" />
+                                        <path d="M8 21H3v-5" />
+                                    </svg>
+                                </div>
+                                <div class="action-title">重置流量</div>
+                                <div class="action-desc">流量用完后重置使用</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="no-subscription" id="noSubscription" style="display: none;">
+                        <div class="no-subscription-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <line x1="12" y1="8" x2="12" y2="12" />
+                                <line x1="12" y1="16" x2="12.01" y2="16" />
+                            </svg>
+                        </div>
+                        <h3 class="no-subscription-title">暂无订阅</h3>
+                        <p class="no-subscription-desc">您还没有购买任何订阅套餐</p>
+                        <a href="/shop" class="btn btn-primary">前往购买</a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/js/api.js"></script>
+    <script>
+        function logout() {
+            API.auth.logout();
+            window.location.href = '/login';
+        }
+
+        async function loadDashboard() {
+            try {
+                const result = await API.dashboard.getData();
+
+                if (result.code === 0) {
+                    const data = result.data;
+
+                    // Update user info
+                    const user = API.getUser();
+                    if (user) {
+                        document.getElementById('navUserName').textContent = user.email?.split('@')[0] || 'User';
+                        document.getElementById('navUserEmail').textContent = user.email || '';
+                    }
+
+                    // Update balance
+                    document.getElementById('balance').innerHTML = `${data.balance.toFixed(2)} <span style="font-size: 1rem; color: var(--cyber-text-muted);">CNY</span>`;
+                    document.getElementById('lastBalance').textContent = data.balance.toFixed(2);
+
+                    // Update traffic
+                    const totalTraffic = data.traffic_total || 0;
+                    const usedTraffic = data.traffic_used || 0;
+                    const remainingTraffic = data.traffic_remaining || 0;
+                    const trafficPercent = data.traffic_percent || 0;
+
+                    document.getElementById('traffic').innerHTML = `${remainingTraffic.toFixed(2)} / ${totalTraffic} <span style="font-size: 1rem; color: var(--cyber-text-muted);">GB</span>`;
+                    document.getElementById('trafficBar').style.width = trafficPercent + '%';
+                    document.getElementById('usedTraffic').textContent = usedTraffic.toFixed(2);
+
+                    // Update commission
+                    document.getElementById('commission').innerHTML = `${data.commission.toFixed(2)} <span style="font-size: 1rem; color: var(--cyber-text-muted);">CNY</span>`;
+                    document.getElementById('pendingCommission').textContent = data.pending_commission.toFixed(2);
+
+                    // Update subscription
+                    if (data.subscription) {
+                        const sub = data.subscription;
+                        document.getElementById('subscriptionContent').classList.add('active');
+                        document.getElementById('planName').textContent = sub.plan_name || '未知套餐';
+                        window.currentSubscription = sub;
+
+                        if (sub.expires_at) {
+                            document.getElementById('planDesc').textContent = `该订阅将于 ${sub.expires_at} 过期，或流量用完为止`;
+                        } else {
+                            document.getElementById('planDesc').textContent = '该订阅长期有效！';
+                        }
+                    } else {
+                        document.getElementById('noSubscription').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Load dashboard error:', error);
+            }
+        }
+
+        function showSubscriptionModal() {
+            const sub = window.currentSubscription;
+            if (!sub) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h3 class="modal-title">订阅链接</h3>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="qr-container">
+                            <div class="qr-code">
+                                <div class="qr-placeholder">订阅二维码</div>
+                            </div>
+                            <div class="subscription-link-box" id="subLinkBox">加载中...</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove()">关闭</button>
+                        <button class="btn btn-primary" onclick="copySubscriptionLink()">复制链接</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // Load subscription link
+            API.subscriptions.getLink().then(result => {
+                if (result.code === 0 && result.data) {
+                    const url = result.data.subscription_url || 'N/A';
+                    document.getElementById('subLinkBox').textContent = url;
+                }
+            });
+        }
+
+        function copySubscriptionLink() {
+            const linkBox = document.getElementById('subLinkBox');
+            if (linkBox && linkBox.textContent) {
+                navigator.clipboard.writeText(linkBox.textContent);
+                alert('链接已复制到剪贴板');
+            }
+        }
+
+        function showResetTrafficModal() {
+            alert('流量重置功能开发中，请联系客服处理');
+        }
+
+        // Initialize
+        window.addEventListener('DOMContentLoaded', function () {
+            loadDashboard();
+        });
+    </script>
+</body>
+
+</html>
